@@ -3,8 +3,8 @@ from collections import defaultdict
 from datetime import datetime as dt
 from pathlib import Path
 
-
 BASE_DIR = Path('results')
+COLUMNS = ('Статус', 'Количество')
 
 
 class PepParsePipeline:
@@ -21,6 +21,8 @@ class PepParsePipeline:
         filename = BASE_DIR / f'status_summary_{now}.csv'
         with open(filename, mode='w', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(('Статус', 'Количество'))
-            writer.writerows(self.status_count.items())
-            writer.writerow(('Total', sum(self.status_count.values())))
+            writer.writerows([
+                COLUMNS,
+                *self.status_count.items(),
+                ('Total', sum(self.status_count.values())),
+            ])
