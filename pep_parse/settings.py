@@ -15,11 +15,10 @@ PEP_PAGE_STATUS_XPATH = ("//dl/*[contains(text(), 'Status')]"
 PEPS_PAGE_LIST_OF_URL_CSS = '#numerical-index table a::attr(href)'
 
 BASE_DIR = Path(__file__).parent.parent
-RESULTS_DIR = BASE_DIR / 'results'
 STATUS_SUMMARY_CSV_COLUMNS = ('Статус', 'Количество')
 
 FEEDS = {
-    RESULTS_DIR / 'pep_%(time)s.csv': {
+    'results/pep_%(time)s.csv': {
         'format': 'csv',
         'fields': ['number', 'name', 'status'],
         'overwrite': True
