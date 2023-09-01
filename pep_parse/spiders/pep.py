@@ -3,9 +3,9 @@ import re
 import scrapy
 
 from pep_parse.items import PepParseItem
-
-DOMAIN = 'peps.python.org'
-URL = f'https://{DOMAIN}/'
+from pep_parse.settings import (DOMAIN, PEP_PAGE_NUMBER_NAME_REGEX,
+                                PEP_PAGE_STATUS_XPATH,
+                                PEPS_PAGE_LIST_OF_URL_CSS, URL)
 
 
 class PepSpider(scrapy.Spider):
@@ -14,19 +14,17 @@ class PepSpider(scrapy.Spider):
     start_urls = [URL]
 
     def parse(self, response):
-        all_peps = response.css(
-            '#numerical-index table a::attr(href)').getall()
+        all_peps = response.css(PEPS_PAGE_LIST_OF_URL_CSS).getall()
         for pep_link in all_peps:
             yield response.follow(pep_link, callback=self.parse_pep)
 
     def parse_pep(self, response):
         header = response.css('h1.page-title::text').get()
         number, name = re.search(
-            r'PEP (?P<number>\d+) – (?P<name>.*)',
+            PEP_PAGE_NUMBER_NAME_REGEX,
             header,
         ).groups()
-        status = response.xpath("//dl/*[contains(text(), 'Status')]"
-                                "/following-sibling::dd/abbr/text()").get()
+        status = response.xpath(PEP_PAGE_STATUS_XPATH).get()
         yield PepParseItem(
             number=number,
             name=name,
